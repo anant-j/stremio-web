@@ -47,6 +47,7 @@ const Video = ({ className, id, title, thumbnail, episode, released, upcoming, w
     }, []);
     const toggleWatchedOnClick = React.useCallback((event) => {
         event.preventDefault();
+        event.stopPropagation();
         closeMenu();
         core.transport.dispatch({
             action: 'MetaDetails',
@@ -56,17 +57,14 @@ const Video = ({ className, id, title, thumbnail, episode, released, upcoming, w
             }
         });
     }, [id, released, watched]);
-    const href = React.useMemo(() => {
-        return deepLinks ?
-            typeof deepLinks.player === 'string' ?
-                deepLinks.player
-                :
-                typeof deepLinks.metaDetailsStreams === 'string' ?
-                    deepLinks.metaDetailsStreams
-                    :
-                    null
-            :
-            null;
+    const videoButtonOnClick = React.useCallback(() => {
+        if (deepLinks) {
+            if (typeof deepLinks.player === 'string') {
+                window.location = deepLinks.player;
+            } else if (typeof deepLinks.metaDetailsStreams === 'string') {
+                window.location.replace(deepLinks.metaDetailsStreams);
+            }
+        }
     }, [deepLinks]);
     const renderLabel = React.useMemo(() => function renderLabel({ className, id, title, thumbnail, episode, released, upcoming, watched, progress, scheduled, children, ...props }) {
         return (
@@ -119,7 +117,7 @@ const Video = ({ className, id, title, thumbnail, episode, released, upcoming, w
                         }
                         <div className={styles['upcoming-watched-container']}>
                             {
-                                upcoming ?
+                                upcoming && !watched ?
                                     <div className={styles['upcoming-container']}>
                                         <div className={styles['flag-label']}>Upcoming</div>
                                     </div>
@@ -171,7 +169,7 @@ const Video = ({ className, id, title, thumbnail, episode, released, upcoming, w
             watched={watched}
             progress={progress}
             scheduled={scheduled}
-            href={href}
+            onClick={videoButtonOnClick}
             {...props}
             onMouseUp={popupLabelOnMouseUp}
             onLongPress={popupLabelOnLongPress}
