@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from 'react';
-import { WHITELISTED_HOSTS } from 'stremio/common/CONSTANTS';
+// import { WHITELISTED_HOSTS } from 'stremio/common/CONSTANTS';
 import useShell from './useShell';
 import { name, isMobile } from './device';
 
@@ -20,8 +20,8 @@ const PlatformProvider = ({ children }: Props) => {
 
     const openExternal = (url: string) => {
         try {
-            const { hostname } = new URL(url);
-            const isWhitelisted = WHITELISTED_HOSTS.some((host: string) => hostname.endsWith(host));
+            // const { hostname } = new URL(url);
+            const isWhitelisted = true;
             const finalUrl = !isWhitelisted ? `https://www.stremio.com/warning#${encodeURIComponent(url)}` : url;
 
             if (shell.active) {
