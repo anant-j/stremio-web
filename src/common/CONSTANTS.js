@@ -89,7 +89,7 @@ const EXTERNAL_PLAYERS = [
     {
         label: 'Infuse',
         value: 'infuse',
-        platforms: ['ios'],
+        platforms: ['ios', 'visionos'],
     },
     {
         label: 'M3U Playlist',
@@ -98,7 +98,7 @@ const EXTERNAL_PLAYERS = [
     },
 ];
 
-const WHITELISTED_HOSTS = ['stremio.com', 'strem.io', 'stremio.zendesk.com', 'google.com', 'youtube.com', 'twitch.tv', 'twitter.com', 'x.com', 'netflix.com', 'adex.network', 'amazon.com', 'forms.gle'];
+const WHITELISTED_HOSTS = ['stremio.com', 'strem.io', 'stremio.zendesk.com', 'google.com', 'youtube.com', 'twitch.tv', 'twitter.com', 'x.com', 'netflix.com', 'adex.network', 'amazon.com', 'forms.gle', 'netlify.app'];
 
 module.exports = {
     CHROMECAST_RECEIVER_APP_ID,
