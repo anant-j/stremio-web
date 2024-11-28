@@ -9,7 +9,7 @@ const APPLE_MOBILE_DEVICES = [
     'iPod',
 ];
 
-const { userAgent, platform, maxTouchPoints } = globalThis.navigator;
+const { userAgent, platform } = globalThis.navigator;
 
 // this detects ipad properly in safari
 // while bowser does not
@@ -17,7 +17,7 @@ const isIOS = APPLE_MOBILE_DEVICES.includes(platform) || (userAgent.includes('Ma
 
 // Edge case: iPad is included in this function
 // Keep in mind maxTouchPoints for Vision Pro might change in the future
-const isVisionOS = userAgent.includes('Macintosh') && maxTouchPoints === 5;
+const isVisionOS = false;
 
 const bowser = Bowser.getParser(userAgent);
 const os = bowser.getOSName().toLowerCase();
