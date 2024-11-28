@@ -87,6 +87,11 @@ const EXTERNAL_PLAYERS = [
         platforms: ['visionos'],
     },
     {
+        label: 'Infuse',
+        value: 'infuse',
+        platforms: ['ios'],
+    },
+    {
         label: 'M3U Playlist',
         value: 'm3u',
         platforms: ['ios', 'visionos', 'android', 'windows', 'linux', 'macos'],
