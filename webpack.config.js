@@ -1,8 +1,10 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
 const path = require('path');
+const os = require('os');
 const { execSync } = require('child_process');
 const webpack = require('webpack');
+const threadLoader = require('thread-loader');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -13,6 +15,25 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const pachageJson = require('./package.json');
 
 const COMMIT_HASH = execSync('git rev-parse HEAD').toString().trim();
+
+const THREAD_LOADER = {
+    loader: 'thread-loader',
+    options: {
+        name: 'shared-pool',
+        workers: os.cpus().length,
+    },
+};
+
+threadLoader.warmup(
+    THREAD_LOADER.options,
+    [
+        'babel-loader',
+        'ts-loader',
+        'css-loader',
+        'postcss-loader',
+        'less-loader',
+    ],
+);
 
 module.exports = (env, argv) => ({
     mode: argv.mode,
@@ -30,24 +51,31 @@ module.exports = (env, argv) => ({
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            '@babel/preset-env',
-                            '@babel/preset-react'
-                        ],
-                        plugins: [
-                            '@babel/plugin-proposal-class-properties',
-                            '@babel/plugin-proposal-object-rest-spread'
-                        ]
+                use: [
+                    THREAD_LOADER,
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: [
+                                '@babel/preset-env',
+                                '@babel/preset-react'
+                            ],
+                        }
                     }
-                }
+                ]
             },
             {
                 test: /\.(ts|tsx)$/,
                 exclude: /node_modules/,
-                use: 'ts-loader',
+                use: [
+                    THREAD_LOADER,
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            happyPackMode: true,
+                        }
+                    }
+                ]
             },
             {
                 test: /\.less$/,
@@ -59,6 +87,7 @@ module.exports = (env, argv) => ({
                             esModule: false
                         }
                     },
+                    THREAD_LOADER,
                     {
                         loader: 'css-loader',
                         options: {
@@ -134,7 +163,7 @@ module.exports = (env, argv) => ({
                 exclude: /node_modules/,
                 type: 'asset/resource',
                 generator: {
-                    filename: `${COMMIT_HASH}/images/[name][ext][query]`
+                    filename: 'images/[name][ext][query]'
                 }
             },
             {
@@ -202,9 +231,10 @@ module.exports = (env, argv) => ({
             }),
         new CopyWebpackPlugin({
             patterns: [
-                { from: 'favicons', to: `${COMMIT_HASH}/favicons` },
-                { from: 'images', to: `${COMMIT_HASH}/images` },
-                { from: 'screenshots/*.webp', to: `${COMMIT_HASH}` },
+                { from: 'favicons', to: 'favicons' },
+                { from: 'images', to: 'images' },
+                { from: 'screenshots/*.webp', to: './' },
+                { from: '.well-known', to: '.well-known' },
             ]
         }),
         new MiniCssExtractPlugin({
@@ -214,8 +244,8 @@ module.exports = (env, argv) => ({
             template: './src/index.html',
             inject: false,
             scriptLoading: 'blocking',
-            faviconsPath: `${COMMIT_HASH}/favicons`,
-            imagesPath: `${COMMIT_HASH}/images`,
+            faviconsPath: 'favicons',
+            imagesPath: 'images',
         }),
         new WebpackPwaManifest({
             name: 'Stremio Web',
@@ -232,33 +262,33 @@ module.exports = (env, argv) => ({
             icons: [
                 {
                     src: 'images/icon.png',
-                    destination: `${COMMIT_HASH}/images`,
+                    destination: 'icons',
                     sizes: [196, 512],
-                    purpose: 'any',
-                    ios: true,
+                    purpose: 'any'
                 },
                 {
                     src: 'images/maskable_icon.png',
-                    destination: `${COMMIT_HASH}/images`,
+                    destination: 'maskable_icons',
                     sizes: [196, 512],
                     purpose: 'maskable',
+                    ios: true
                 },
                 {
                     src: 'favicons/favicon.ico',
-                    destination: `${COMMIT_HASH}/favicons`,
+                    destination: 'favicons',
                     sizes: [256],
                 }
             ],
             screenshots : [
                 {
-                    src: `${COMMIT_HASH}/screenshots/board_wide.webp`,
+                    src: 'screenshots/board_wide.webp',
                     sizes: '1440x900',
                     type: 'image/webp',
                     form_factor: 'wide',
                     label: 'Homescreen of Stremio'
                 },
                 {
-                    src: `${COMMIT_HASH}/screenshots/board_narrow.webp`,
+                    src: 'screenshots/board_narrow.webp',
                     sizes: '414x896',
                     type: 'image/webp',
                     form_factor: 'narrow',

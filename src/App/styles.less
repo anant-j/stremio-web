@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2023 Smart code 203358507
+// Copyright (C) 2017-2024 Smart code 203358507
 
 @import (reference) '~stremio/common/screen-sizes.less';
 @import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
@@ -12,6 +12,30 @@
     @import (once, less) '~stremio/common/animations.less';
     @import (once, less) '~stremio-router/styles.css';
 }
+
+// iOS pads the bottom inset more than needed, so we deduce the actual inset size when using the webapp
+@calculated-bottom-safe-inset: ~"min(env(safe-area-inset-bottom, 0rem), max(1rem, calc(var(--viewport-height-diff) - env(safe-area-inset-top, 0rem))))";
+
+// Viewport sizes
+@viewport-width: ~"100vw";
+@viewport-height: ~"100vh";
+
+// HTML sizes
+@html-width: ~"calc(max(var(--small-viewport-width), var(--dynamic-viewport-width)))";
+@html-height: ~"calc(max(var(--small-viewport-height), var(--dynamic-viewport-height)))";
+@html-standalone-width: ~"calc(max(100%, var(--small-viewport-width)))";
+@html-standalone-height: ~"calc(max(100%, var(--small-viewport-height)))";
+
+// Safe area insets
+@safe-area-inset-top: env(safe-area-inset-top, 0rem);
+@safe-area-inset-right: env(safe-area-inset-right, 0rem);
+@safe-area-inset-bottom: env(safe-area-inset-bottom, 0rem);
+@safe-area-inset-left: env(safe-area-inset-left, 0rem);
+
+@top-overlay-size: 5.25rem;
+@bottom-overlay-size: 0rem;
+@overlap-size: 3rem;
+@transparency-grandient-pad: 6rem;
 
 :root {
     --landscape-shape-ratio: 0.5625;
@@ -38,8 +62,48 @@
     --quaternary-accent-color: rgba(18, 69, 166, 1);
     --overlay-color: rgba(255, 255, 255, 0.05);
     --modal-background-color: rgba(15, 13, 32, 1);
-    --outer-glow: 0px 0px 30px rgba(123, 91, 245, 0.37);
+    --outer-glow: 0px 0px 15px rgba(123, 91, 245, 0.37);
+    --warning-accent-color: rgba(255, 165, 0, 1);
+    --danger-accent-color: rgba(220, 38, 38, 1);  
     --border-radius: 0.75rem;
+    --top-overlay-size: @top-overlay-size;
+    --bottom-overlay-size: @bottom-overlay-size;
+    --overlap-size: @overlap-size;
+    --transparency-grandient-pad: @transparency-grandient-pad;
+    --safe-area-inset-top: @safe-area-inset-top;
+    --safe-area-inset-right: @safe-area-inset-right;
+    --safe-area-inset-bottom: @safe-area-inset-bottom;
+    --safe-area-inset-left: @safe-area-inset-left;
+    --dynamic-viewport-width: @viewport-width;
+    --dynamic-viewport-height: @viewport-height;
+    --large-viewport-width: @viewport-width;
+    --large-viewport-height: @viewport-height;
+    --small-viewport-width: @viewport-width;
+    --small-viewport-height: @viewport-height;
+    --viewport-height-diff: calc(100vh - 100vh);
+
+    @supports (height: 100dvh) {
+        --dynamic-viewport-width: 100dvw;
+        --dynamic-viewport-height: 100dvh;
+    }
+
+    @supports (height: 100lvh) {
+        --large-viewport-width: 100lvw;
+        --large-viewport-height: 100lvh;
+    }
+
+    @supports (height: 100svh) {
+        --small-viewport-width: 100svw;
+        --small-viewport-height: 100svh;
+    }
+
+    @supports (height: 100lvh) and (height: 100svh) {
+        --viewport-height-diff: calc(100lvh - 100svh);
+    }
+
+    @media (display-mode: standalone) {
+        --safe-area-inset-bottom: @calculated-bottom-safe-inset;
+    }
 }
 
 * {
@@ -85,13 +149,20 @@ svg {
 }
 
 html {
-    width: 100%;
-    height: 100%;
-    min-width: 640px;
-    min-height: 480px;
+    width: @html-width;
+    height: @html-height;
     font-family: 'PlusJakartaSans', 'sans-serif';
     overflow: auto;
     overscroll-behavior: none;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+
+    @media (display-mode: standalone) {
+        width: @html-standalone-width;
+        height: @html-standalone-height;
+    }
 
     body {
         width: 100%;
@@ -106,13 +177,13 @@ html {
 
             .toasts-container {
                 position: absolute;
-                top: calc(1.2 * var(--horizontal-nav-bar-size));
-                right: 0;
-                bottom: calc(1.2 * var(--horizontal-nav-bar-size));
+                top: calc(1.2 * var(--horizontal-nav-bar-size) + var(--safe-area-inset-top));
+                right: var(--safe-area-inset-right);
+                bottom: calc(1.2 * var(--horizontal-nav-bar-size) + var(--safe-area-inset-bottom, 0rem));
                 left: auto;
                 z-index: 1;
                 padding: 0 calc(0.5 * var(--horizontal-nav-bar-size));
-                overflow-y: auto;
+                overflow: visible;
                 scrollbar-width: none;
                 pointer-events: none;
 
@@ -133,10 +204,30 @@ html {
                 background-color: var(--modal-background-color);
                 box-shadow: var(--outer-glow);
                 transition: opacity 0.1s ease-out;
+            }
+
+            .file-drop-container {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: 1rem;
+                border: 0.5rem dashed transparent;
+                pointer-events: none;
+                transition: border-color 0.25s ease-out;
 
                 &:global(.active) {
-                    transition-delay: 0.25s;
+                    border-color: var(--primary-accent-color);
                 }
+            }
+
+            .updater-banner-container {
+                z-index: 1;
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
             }
 
             .router {
@@ -178,9 +269,6 @@ html {
 
 @media only screen and (max-width: @xsmall) {
     html {
-        min-width: inherit;
-        min-height: inherit;
-
         body {
             :global(#app) {
                 .toasts-container {
@@ -192,5 +280,11 @@ html {
                 }
             }
         }
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    :root {
+        --bottom-overlay-size: 6rem;
     }
 }

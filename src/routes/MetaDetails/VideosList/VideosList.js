@@ -4,12 +4,13 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { t } = require('i18next');
-const { Image, SearchBar, Toggle } = require('stremio/common');
+const { useServices } = require('stremio/services');
+const { Image, SearchBar, Toggle, Video } = require('stremio/components');
 const SeasonsBar = require('./SeasonsBar');
-const Video = require('./Video');
 const styles = require('./styles');
 
 const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, toggleNotifications }) => {
+    const { core } = useServices();
     const showNotificationsToggle = React.useMemo(() => {
         return metaItem?.content?.content?.inLibrary && metaItem?.content?.content?.videos?.length;
     }, [metaItem]);
@@ -35,17 +36,23 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
             return season;
         }
 
+        const video = videos?.find((video) => video.id === libraryItem?.state.video_id);
+
+        if (video && video.season && seasons.includes(video.season)) {
+            return video.season;
+        }
+
         const nonSpecialSeasons = seasons.filter((season) => season !== 0);
         if (nonSpecialSeasons.length > 0) {
-            return nonSpecialSeasons[nonSpecialSeasons.length - 1];
+            return nonSpecialSeasons[0];
         }
 
         if (seasons.length > 0) {
-            return seasons[seasons.length - 1];
+            return seasons[0];
         }
 
         return null;
-    }, [seasons, season]);
+    }, [seasons, season, videos, libraryItem]);
     const videosForSeason = React.useMemo(() => {
         return videos
             .filter((video) => {
@@ -55,10 +62,36 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                 return a.episode - b.episode;
             });
     }, [videos, selectedSeason]);
+
+    const seasonWatched = React.useMemo(() => {
+        return videosForSeason.every((video) => video.watched);
+    }, [videosForSeason]);
+
     const [search, setSearch] = React.useState('');
     const searchInputOnChange = React.useCallback((event) => {
         setSearch(event.currentTarget.value);
     }, []);
+
+    const onMarkVideoAsWatched = (video, watched) => {
+        core.transport.dispatch({
+            action: 'MetaDetails',
+            args: {
+                action: 'MarkVideoAsWatched',
+                args: [video, !watched]
+            }
+        });
+    };
+
+    const onMarkSeasonAsWatched = (season, watched) => {
+        core.transport.dispatch({
+            action: 'MetaDetails',
+            args: {
+                action: 'MarkSeasonAsWatched',
+                args: [season, !watched]
+            }
+        });
+    };
+
     return (
         <div className={classnames(className, styles['videos-list-container'])}>
             {
@@ -123,6 +156,7 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                                                 id={video.id}
                                                 title={video.title}
                                                 thumbnail={video.thumbnail}
+                                                season={video.season}
                                                 episode={video.episode}
                                                 released={video.released}
                                                 upcoming={video.upcoming}
@@ -130,6 +164,9 @@ const VideosList = ({ className, metaItem, libraryItem, season, seasonOnSelect, 
                                                 progress={video.progress}
                                                 deepLinks={video.deepLinks}
                                                 scheduled={video.scheduled}
+                                                seasonWatched={seasonWatched}
+                                                onMarkVideoAsWatched={onMarkVideoAsWatched}
+                                                onMarkSeasonAsWatched={onMarkSeasonAsWatched}
                                             />
                                         ))
                                 }
