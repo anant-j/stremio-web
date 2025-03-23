@@ -9,6 +9,7 @@ type Auth = {
             created_at: number,
             expires_in: number,
         },
+        isNewUser: boolean,
     },
 };
 
@@ -20,6 +21,7 @@ type Settings = {
     hardwareDecoding: boolean,
     escExitFullscreen: boolean,
     interfaceLanguage: string,
+    hideSpoilers: boolean,
     nextVideoNotificationDuration: number,
     playInBackground: boolean,
     playerType: string | null,

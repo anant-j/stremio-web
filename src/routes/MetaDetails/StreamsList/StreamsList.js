@@ -5,25 +5,33 @@ const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { useTranslation } = require('react-i18next');
 const { default: Icon } = require('@stremio/stremio-icons/react');
-const { Button, Image, Multiselect } = require('stremio/common');
+const { Button, Image, Multiselect } = require('stremio/components');
 const { useServices } = require('stremio/services');
 const Stream = require('./Stream');
 const styles = require('./styles');
+const { usePlatform, useProfile } = require('stremio/common');
 
 const ALL_ADDONS_KEY = 'ALL';
 
 const StreamsList = ({ className, video, ...props }) => {
     const { t } = useTranslation();
     const { core } = useServices();
+    const platform = usePlatform();
+    const profile = useProfile();
+    const streamsContainerRef = React.useRef(null);
     const [selectedAddon, setSelectedAddon] = React.useState(ALL_ADDONS_KEY);
     const onAddonSelected = React.useCallback((event) => {
+        streamsContainerRef.current.scrollTo({ top: 0, left: 0, behavior: platform.name === 'ios' ? 'smooth' : 'instant' });
         setSelectedAddon(event.value);
-    }, []);
+    }, [platform]);
+    const showInstallAddonsButton = React.useMemo(() => {
+        return !profile || profile.auth === null || profile.auth?.user?.isNewUser === true;
+    }, [profile]);
     const backButtonOnClick = React.useCallback(() => {
         if (video.deepLinks && typeof video.deepLinks.metaDetailsVideos === 'string') {
             window.location.replace(video.deepLinks.metaDetailsVideos + (
                 typeof video.season === 'number' ?
-                    `?${new URLSearchParams({'season': video.season})}`
+                    `?${new URLSearchParams({ 'season': video.season })}`
                     :
                     null
             ));
@@ -122,6 +130,15 @@ const StreamsList = ({ className, video, ...props }) => {
                         <div className={styles['message-container']}>
                             <Image className={styles['image']} src={require('/images/empty.png')} alt={' '} />
                             <div className={styles['label']}>{t('NO_STREAM')}</div>
+                            {
+                                showInstallAddonsButton ?
+                                    <Button className={styles['install-button-container']} title={t('ADDON_CATALOGUE_MORE')} href={'#/addons'}>
+                                        <Icon className={styles['icon']} name={'addons'} />
+                                        <div className={styles['label']}>{t('ADDON_CATALOGUE_MORE')}</div>
+                                    </Button>
+                                    :
+                                    null
+                            }
                         </div>
                         :
                         filteredStreams.length === 0 ?
@@ -142,7 +159,7 @@ const StreamsList = ({ className, video, ...props }) => {
                                         :
                                         null
                                 }
-                                <div className={styles['streams-container']}>
+                                <div className={styles['streams-container']} ref={streamsContainerRef}>
                                     {filteredStreams.map((stream, index) => (
                                         <Stream
                                             key={index}
@@ -157,13 +174,18 @@ const StreamsList = ({ className, video, ...props }) => {
                                             onClick={stream.onClick}
                                         />
                                     ))}
+                                    {
+                                        showInstallAddonsButton ?
+                                            <Button className={styles['install-button-container']} title={t('ADDON_CATALOGUE_MORE')} href={'#/addons'}>
+                                                <Icon className={styles['icon']} name={'addons'} />
+                                                <div className={styles['label']}>{t('ADDON_CATALOGUE_MORE')}</div>
+                                            </Button>
+                                            :
+                                            null
+                                    }
                                 </div>
                             </React.Fragment>
             }
-            <Button className={styles['install-button-container']} title={t('ADDON_CATALOGUE_MORE')} href={'#/addons'}>
-                <Icon className={styles['icon']} name={'addons'} />
-                <div className={styles['label']}>{ t('ADDON_CATALOGUE_MORE') }</div>
-            </Button>
         </div>
     );
 };

@@ -1,25 +1,25 @@
-// Copyright (C) 2017-2023 Smart code 203358507
+// Copyright (C) 2017-2024 Smart code 203358507
 
 @import (reference) '~@stremio/stremio-colors/less/stremio-colors.less';
 @import (reference) '~stremio/common/screen-sizes.less';
 
-:import('~stremio/common/Toggle/styles.less') {
+:import('~stremio/components/Toggle/styles.less') {
     checkbox-icon: icon;
 }
 
-:import('~stremio/common/Multiselect/styles.less') {
+:import('~stremio/components/Multiselect/styles.less') {
     multiselect-menu-container: menu-container;
     multiselect-label: label;
 }
 
 .settings-container {
+    height: calc(100% - var(--safe-area-inset-bottom));
     width: 100%;
-    height: 100%;
     background-color: transparent;
 
     .settings-content {
-        width: 100%;
         height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: row;
 
@@ -64,8 +64,11 @@
             .version-info-label {
                 flex: 0 1 auto;
                 margin: 0.5rem 0;
+                white-space: nowrap;
+                text-overflow: ellipsis;
                 color: var(--primary-foreground-color);
                 opacity: 0.3;
+                overflow: hidden;
             }
         }
 
@@ -242,6 +245,8 @@
                             flex-shrink: 1;
                             flex-basis: auto;
                             line-height: 1.5rem;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
                             color: var(--primary-foreground-color);
                         }
 
@@ -286,7 +291,6 @@
                             }
 
                             .multiselect-menu-container {
-                                max-height: calc(3.2rem * 7);
                                 overflow: auto;
                             }
                         }
@@ -316,7 +320,14 @@
                         }
 
                         &.color-input-container {
-                            padding: 1.75rem 1rem;
+                            padding: 1.3rem 1rem;
+                            border-radius: 3rem;
+                            border: 2px solid transparent;
+                            transition: 0.3s all ease-in-out;
+
+                            &:hover {
+                                border-color: var(--overlay-color);
+                            }
                         }
 
                         &.info-container {

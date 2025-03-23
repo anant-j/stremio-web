@@ -4,12 +4,11 @@ import React, { useCallback, useMemo } from 'react';
 import { useProfile } from 'stremio/common';
 import { DEFAULT_STREAMING_SERVER_URL } from 'stremio/common/CONSTANTS';
 import { useTranslation } from 'react-i18next';
-import Button from 'stremio/common/Button';
+import { Button, RadioButton } from 'stremio/components';
 import useStreamingServer from 'stremio/common/useStreamingServer';
 import Icon from '@stremio/stremio-icons/react';
 import styles from './Item.less';
 import classNames from 'classnames';
-import RadioButton from 'stremio/common/RadioButton/RadioButton';
 import useStreamingServerUrls from '../useStreamingServerUrls';
 
 type Props = {
@@ -27,8 +26,8 @@ const Item = ({ url }: Props) => {
 
     const handleDelete = useCallback(() => {
         deleteServerUrl(url);
-        selectServerUrl(DEFAULT_STREAMING_SERVER_URL);
-    }, [url]);
+        selected && selectServerUrl(DEFAULT_STREAMING_SERVER_URL);
+    }, [url, selected]);
 
     const handleSelect = useCallback(() => {
         selectServerUrl(url);

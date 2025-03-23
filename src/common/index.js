@@ -1,32 +1,7 @@
 // Copyright (C) 2017-2023 Smart code 203358507
 
-const AddonDetailsModal = require('./AddonDetailsModal');
-const { default: BottomSheet } = require('./BottomSheet');
-const Button = require('./Button');
-const Toggle = require('./Toggle');
-const { default: Chips } = require('./Chips');
-const ColorInput = require('./ColorInput');
-const ContinueWatchingItem = require('./ContinueWatchingItem');
-const DelayedRenderer = require('./DelayedRenderer');
-const Image = require('./Image');
-const LibItem = require('./LibItem');
-const MainNavBars = require('./MainNavBars');
-const MetaItem = require('./MetaItem');
-const MetaPreview = require('./MetaPreview');
-const MetaRow = require('./MetaRow');
-const ModalDialog = require('./ModalDialog');
-const Multiselect = require('./Multiselect');
-const { default: MultiselectMenu } = require('./MultiselectMenu');
-const { HorizontalNavBar, VerticalNavBar } = require('./NavBar');
-const { default: HorizontalScroll } = require('./HorizontalScroll');
+const { FileDropProvider, onFileDrop } = require('./FileDrop');
 const { PlatformProvider, usePlatform } = require('./Platform');
-const PlayIconCircleCentered = require('./PlayIconCircleCentered');
-const Popup = require('./Popup');
-const SearchBar = require('./SearchBar');
-const StreamingServerWarning = require('./StreamingServerWarning');
-const SharePrompt = require('./SharePrompt');
-const Slider = require('./Slider');
-const { default: TextInput } = require('./TextInput');
 const { ToastProvider, useToast } = require('./Toast');
 const { TooltipProvider, Tooltip } = require('./Tooltips');
 const comparatorWithPriorities = require('./comparatorWithPriorities');
@@ -35,6 +10,7 @@ const { withCoreSuspender, useCoreSuspender } = require('./CoreSuspender');
 const getVisibleChildrenRange = require('./getVisibleChildrenRange');
 const interfaceLanguages = require('./interfaceLanguages.json');
 const languageNames = require('./languageNames.json');
+const languages = require('./languages');
 const routesRegexp = require('./routesRegexp');
 const useAnimationFrame = require('./useAnimationFrame');
 const useBinaryState = require('./useBinaryState');
@@ -44,41 +20,17 @@ const useModelState = require('./useModelState');
 const useNotifications = require('./useNotifications');
 const useOnScrollToBottom = require('./useOnScrollToBottom');
 const useProfile = require('./useProfile');
+const { default: useShell } = require('./useShell');
 const useStreamingServer = require('./useStreamingServer');
 const useTorrent = require('./useTorrent');
 const useTranslate = require('./useTranslate');
-const EventModal = require('./EventModal');
+const { default: useOrientation } = require('./useOrientation');
 
 module.exports = {
-    AddonDetailsModal,
-    BottomSheet,
-    Button,
-    Toggle,
-    Chips,
-    ColorInput,
-    ContinueWatchingItem,
-    DelayedRenderer,
-    Image,
-    LibItem,
-    MainNavBars,
-    MetaItem,
-    MetaPreview,
-    MetaRow,
-    ModalDialog,
-    Multiselect,
-    MultiselectMenu,
-    HorizontalNavBar,
-    HorizontalScroll,
-    VerticalNavBar,
+    FileDropProvider,
+    onFileDrop,
     PlatformProvider,
     usePlatform,
-    PlayIconCircleCentered,
-    Popup,
-    SearchBar,
-    StreamingServerWarning,
-    SharePrompt,
-    Slider,
-    TextInput,
     ToastProvider,
     useToast,
     TooltipProvider,
@@ -90,6 +42,7 @@ module.exports = {
     getVisibleChildrenRange,
     interfaceLanguages,
     languageNames,
+    languages,
     routesRegexp,
     useAnimationFrame,
     useBinaryState,
@@ -99,8 +52,9 @@ module.exports = {
     useNotifications,
     useOnScrollToBottom,
     useProfile,
+    useShell,
     useStreamingServer,
     useTorrent,
     useTranslate,
-    EventModal,
+    useOrientation,
 };

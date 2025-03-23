@@ -4,10 +4,13 @@ const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
 const { default: Icon } = require('@stremio/stremio-icons/react');
-const { Image, Button, CONSTANTS } = require('stremio/common');
+const { CONSTANTS, useProfile } = require('stremio/common');
+const { Button, Image } = require('stremio/components');
 const styles = require('./styles');
 
 const NextVideoPopup = ({ className, metaItem, nextVideo, onDismiss, onNextVideoRequested }) => {
+    const profile = useProfile();
+    const blurPosterImage = profile.settings.hideSpoilers && metaItem.type === 'series';
     const watchNowButtonRef = React.useRef(null);
     const [animationEnded, setAnimationEnded] = React.useState(false);
     const videoName = React.useMemo(() => {
@@ -50,7 +53,7 @@ const NextVideoPopup = ({ className, metaItem, nextVideo, onDismiss, onNextVideo
         <div className={classnames(className, styles['next-video-popup-container'])} onAnimationEnd={onAnimationEnd}>
             <div className={styles['poster-container']}>
                 <Image
-                    className={styles['poster-image']}
+                    className={classnames(styles['poster-image'], { [styles['blurred']]: blurPosterImage })}
                     src={nextVideo?.thumbnail}
                     alt={' '}
                     fallbackSrc={metaItem?.poster}
@@ -71,14 +74,6 @@ const NextVideoPopup = ({ className, metaItem, nextVideo, onDismiss, onNextVideo
                         typeof videoName === 'string' ?
                             <div className={styles['title']}>
                                 { videoName }
-                            </div>
-                            :
-                            null
-                    }
-                    {
-                        nextVideo !== null && typeof nextVideo.overview === 'string' ?
-                            <div className={styles['description']}>
-                                { nextVideo.overview }
                             </div>
                             :
                             null
