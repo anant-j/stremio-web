@@ -5570,10 +5570,12 @@ html.active-slider-within-NcgYf body {
 .search-container-uXEFf .search-content-LX6un {
   height: 100%;
   width: 100%;
+  padding: 0 1rem;
   overflow-y: auto;
 }
 .search-container-uXEFf .search-content-LX6un .search-row-EQLaD {
-  margin: 4rem 2rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 .search-container-uXEFf .search-content-LX6un .search-hints-wrapper-IjhmE {
   display: flex;
@@ -5742,7 +5744,7 @@ html.active-slider-within-NcgYf body {
 }
 @media only screen and (max-width: 640px) {
   .search-container-uXEFf .search-content-LX6un .search-row-EQLaD {
-    margin: 2rem 1rem;
+    margin-bottom: 1.5rem;
   }
   .search-container-uXEFf .search-content-LX6un .search-row-poster-m7CUE .meta-item-QFHCh:nth-child(n+4),
   .search-container-uXEFf .search-content-LX6un .search-row-square-VesJA .meta-item-QFHCh:nth-child(n+4),
@@ -7963,7 +7965,7 @@ html:not(.active-slider-within-NcgYf) .player-container-wIELK.overlayHidden-gyjI
 
 @font-face {
   font-family: 'PlusJakartaSans';
-  src: url(../../bfc2c20a439da267899142395284bcbcb4faa207/fonts/PlusJakartaSans.ttf) format('truetype');
+  src: url(../../18f2c61a1074390a3fc32e18da75694ceca269ba/fonts/PlusJakartaSans.ttf) format('truetype');
 }
  {
   /* Copyright (C) 2017-2023 Smart code 203358507 */
