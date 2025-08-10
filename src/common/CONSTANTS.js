@@ -111,6 +111,8 @@ const EXTERNAL_PLAYERS = [
 
 const WHITELISTED_HOSTS = ['stremio.com', 'strem.io', 'stremio.zendesk.com', 'google.com', 'youtube.com', 'twitch.tv', 'twitter.com', 'x.com', 'netflix.com', 'adex.network', 'amazon.com', 'forms.gle', 'netlify.app'];
 
+const PROTOCOL = 'stremio:';
+
 module.exports = {
     CHROMECAST_RECEIVER_APP_ID,
     DEFAULT_STREAMING_SERVER_URL,
@@ -132,4 +134,5 @@ module.exports = {
     SUPPORTED_LOCAL_SUBTITLES,
     EXTERNAL_PLAYERS,
     WHITELISTED_HOSTS,
+    PROTOCOL,
 };
