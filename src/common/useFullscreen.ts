@@ -42,8 +42,22 @@ const useFullscreen = () => {
         };
 
         const onKeyDown = (event: KeyboardEvent) => {
+
+            const activeElement = document.activeElement as HTMLElement;
+
+            const inputFocused =
+                activeElement &&
+                (activeElement.tagName === 'INPUT' ||
+                 activeElement.tagName === 'TEXTAREA' ||
+                 activeElement.tagName === 'SELECT' ||
+                 activeElement.isContentEditable);
+
             if (event.code === 'Escape' && settings.escExitFullscreen) {
                 exitFullscreen();
+            }
+
+            if (event.code === 'KeyF' && !inputFocused) {
+                toggleFullscreen();
             }
 
             if (event.code === 'F11' && shell.active) {
@@ -60,7 +74,7 @@ const useFullscreen = () => {
             document.removeEventListener('keydown', onKeyDown);
             document.removeEventListener('fullscreenchange', onFullscreenChange);
         };
-    }, [settings.escExitFullscreen]);
+    }, [settings.escExitFullscreen, toggleFullscreen]);
 
     return [fullscreen, requestFullscreen, exitFullscreen, toggleFullscreen];
 };
