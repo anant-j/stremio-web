@@ -13,7 +13,33 @@ const styles = require('./styles');
 
 const MetaRow = ({ className, title, catalog, message, itemComponent, notifications }) => {
     const t = useTranslate();
-    const [isHidden, setIsHidden] = React.useState(false);
+    
+    // Create a unique storage key for this MetaRow based on catalog id and name
+    const storageKey = React.useMemo(() => {
+        const catalogId = catalog?.id || catalog?.addon?.manifest?.id || '';
+        const catalogName = catalog?.name || catalog?.addon?.manifest?.name || '';
+        return `metarow-hidden-${catalogId}-${catalogName}`;
+    }, [catalog]);
+
+    // Initialize state from localStorage
+    const [isHidden, setIsHidden] = React.useState(() => {
+        try {
+            const stored = localStorage.getItem(storageKey);
+            return stored ? JSON.parse(stored) : false;
+        } catch (error) {
+            console.warn('Error reading MetaRow hidden state from localStorage:', error);
+            return false;
+        }
+    });
+
+    // Update localStorage whenever isHidden changes
+    React.useEffect(() => {
+        try {
+            localStorage.setItem(storageKey, JSON.stringify(isHidden));
+        } catch (error) {
+            console.warn('Error saving MetaRow hidden state to localStorage:', error);
+        }
+    }, [storageKey, isHidden]);
 
     const catalogTitle = React.useMemo(() => {
         return title ?? t.catalogTitle(catalog);
